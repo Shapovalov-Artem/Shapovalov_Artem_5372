@@ -337,6 +337,17 @@ void PrintStudentsWithoutThree(Student students[],int &cnt){
   }
 }
 
+bool IsNumberUniqueInGroup(const Student students[], int cnt, int group_number, int student_number, int excludeIndex = -1) {
+    for (int i = 0; i < cnt; i++) {
+        if (i == excludeIndex) continue;
+        
+        if (students[i].group_number == group_number && students[i].number == student_number) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void EditStudent(Student students[], int &cnt, string &filename){
   if(cnt == 0){
     cout << "Список пуст!" << endl;
@@ -369,10 +380,29 @@ void EditStudent(Student students[], int &cnt, string &filename){
   cout << "Номер группы (" << students[index].group_number << "): ";
   getline(cin, input);
   if(!input.empty()) students[index].group_number = stoi(input);
+
+  bool valid = false;
+  while(!valid){
+    cout << "Номер в группе (" << students[index].number << "): ";
+    getline(cin, input);
+    
+    if(input.empty()) {
+      valid = true;
+    } else {
+      int newNumber = stoi(input);
+      if (IsNumberUniqueInGroup(students, cnt, students[index].group_number, newNumber, index)) {
+        students[index].number = newNumber;
+        valid = true;
+      } else {
+        cout << "Ошибка: студент с номером " << newNumber 
+             << " уже существует в группе " << students[index].group_number << endl;
+        cout << "Попробуйте снова или оставьте пустым для сохранения текущего номера" << endl;
+        cin.clear();
+        cin.ignore(1000,'\n');
+      }
+    }
+  }
   
-  cout << "Номер в группе (" << students[index].number << "): ";
-  getline(cin, input);
-  if(!input.empty()) students[index].number = stoi(input);
   
   cout << "Оценки (текущие: ";
   for(int i = 0; i < 8; i++) cout << students[index].grades[i] << " ";
