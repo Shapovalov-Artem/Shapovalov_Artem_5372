@@ -50,8 +50,6 @@ int CheckNoThree(Student student){
   return flag;
 }
 
-
-
 int LoadStudents(Student students[], string &filename, int size) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -90,17 +88,85 @@ int LoadStudents(Student students[], string &filename, int size) {
 
 void WriteNewStudent(Student students[], int &cnt, string &filename){
   Student student;
+  bool validinput = false;
+
   cout << "Введите ФИО: ";
-  cin.ignore();
+  cin.ignore(1000, '\n');
   getline(cin, student.fio);
-  cout << "Введите пол:";
-  cin >> student.sex;
-  cout << "Введите номер группы:";
-  cin >> student.group_number;
-  cout <<"Введите номер в группе: ";
-  cin >> student.number;
-  cout << "Введите оценки: ";
-  for(int i=0;i<8;i++) cin >> student.grades[i];
+
+  validinput = false;
+  while(!validinput){
+    cout << "Введите пол(m/f):";
+    if(!(cin >> student.sex) || (student.sex!='m' && student.sex!='f')){
+      cout << "Invalid input" << endl;
+      cin.clear();
+      cin.ignore(1000, '\n');
+    } else{
+      validinput = true;
+    }
+  }
+
+  validinput = false;
+  while(!validinput){
+    cout << "Введите номер группы:";
+    if(!(cin >> student.group_number) || student.group_number < 1000 || student.group_number > 9999){
+      cout << "Invalid input" << endl;
+      cin.clear();
+      cin.ignore(1000, '\n');
+  } else{
+    validinput = true;
+  }
+  }
+  
+  validinput = false;
+  while(!validinput){
+    cout <<"Введите номер в группе: ";
+    if(!(cin >> student.number) || student.number < 1){
+      cout << "Invalid input" << endl;
+      cin.clear();
+      cin.ignore(1000, '\n');
+    } else{
+      validinput = true;
+    }
+  }
+
+  validinput = false;
+  cout << "Введите 8 оценок: ";
+  while (!validinput) {
+    bool hasBadGrade = false;
+    
+    for(int i = 0; i < 8; i++) {
+      cin >> student.grades[i];
+      
+      if (cin.fail()) {
+        cout << "Invalid input" << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        hasBadGrade = true;
+        break;
+      }
+      
+      if (student.grades[i] < 2 || student.grades[i] > 5) {
+        cout << "Invalid input" << endl;
+        hasBadGrade = true;
+        break;
+      }
+      
+      if (student.grades[i] == 2) {
+        cout << "Ошибка: студент имеет двойку и должен быть отчислен. Невозможно добавить." << endl;
+        hasBadGrade = true;
+        break;
+      }
+    }
+    
+    if (hasBadGrade) {
+      cin.clear();
+      cin.ignore(1000, '\n');
+      cout << "Нажмите enter и повторите ввод всех 8 оценок: " << endl;
+    } else {
+      validinput = true;
+    }
+  }
 
   students[cnt] = student;
 
@@ -202,13 +268,8 @@ void PrintTopStudents(Student students[], int &cnt){
   for(int i = 0; i < cnt - 1; i++){
     for(int j = 0; j < cnt - i - 1; j++){
       if(averages[j] < averages[j + 1]){
-        double tempAvg = averages[j];
-        averages[j] = averages[j + 1];
-        averages[j + 1] = tempAvg;
-        
-        int tempIdx = indices[j];
-        indices[j] = indices[j + 1];
-        indices[j + 1] = tempIdx;
+        swap(averages[j], averages[j + 1]);
+        swap(indices[j], indices[j + 1]);
       }
     }
   }
@@ -285,8 +346,10 @@ void EditStudent(Student students[], int &cnt, string &filename){
   int index;
   cin >> index;
   
-  if(index < 1 || index > cnt){
+  if(index < 1 || index > cnt || cin.fail()){
     cout << "Нет студента с таким id" << endl;
+    cin.clear();
+    cin.ignore(1000, '\n');
     return;
   }
   
@@ -295,7 +358,7 @@ void EditStudent(Student students[], int &cnt, string &filename){
   string input;
   
   cout << "ФИО (" << students[index].fio << "): ";
-  cin.ignore();
+  cin.ignore(1000, '\n');
   getline(cin, input);
   if(!input.empty()) students[index].fio = input;
   
@@ -342,7 +405,7 @@ int main(){
   struct Student students[size];
   string filename = "database.txt";
   int count_of_students = LoadStudents(students, filename, size);
-  int choice;
+  int choice = 0;
 
   while(choice!=11){
     cout << "Доступные операции:" << endl;
@@ -369,16 +432,36 @@ int main(){
     case 2:
       PrintAllStudents(students,count_of_students);
       break;
-    case 3:
+    case 3:{
       int N;
-      cin >> N;
+      bool valid = false;
+      while(!valid){
+        if(!(cin >> N)){
+          cout << "Invalid input" << endl;
+          cin.clear();
+          cin.ignore(1000, '\n');
+        } else{
+          valid = true;
+        }
+      }
       PrintStudentOfNGroup(N,students,count_of_students);
       break;
-    case 4:
+    }
+    case 4:{
       int K;
-      cin >> K;
+      bool valid = false;
+      while(!valid){
+        if(!(cin >> K)){
+          cout << "Invalid input" << endl;
+          cin.clear();
+          cin.ignore(1000, '\n');
+        } else{
+          valid = true;
+        }
+      }
       PrintStudentsOfKNumber(K,students,count_of_students);
       break;
+      }
     case 5:
       CountOfSexes(students,count_of_students);
       break;
