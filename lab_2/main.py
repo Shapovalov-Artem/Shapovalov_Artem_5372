@@ -31,7 +31,6 @@ def header(title: str):
     print(f"\n===== {title} =====")
 
 
-# ---------- Часть 1: Склад ----------
 def scenario_warehouse():
     header("Склад: добавление товаров всеми фабриками")
     wh = Warehouse(6)
@@ -59,7 +58,6 @@ def scenario_warehouse():
     print_warehouse(secondary, "Целевой склад после переноса")
 
 
-# ---------- Часть 2: Заказы ----------
 def scenario_orders():
     ivan = Customer(1, "Иван", "Москва")
     anna = Customer(2, "Анна", "Владивосток")
@@ -122,7 +120,6 @@ def scenario_orders():
     print(f"Позиций в копии: {len(copy_order.items)}, в оригинале: {len(heavy.items)}")
 
 
-# ---------- Тесты ----------
 def run_tests():
     header("Тестирование")
     passed = total = 0
