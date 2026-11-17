@@ -1,0 +1,12 @@
+from abc import ABC, abstractmethod
+
+
+class IObservable(ABC):
+    @abstractmethod
+    def subscribe(self, observer): ...
+
+    @abstractmethod
+    def unsubscribe(self, observer): ...
+
+    @abstractmethod
+    def notify(self, event): ...
