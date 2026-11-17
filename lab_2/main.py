@@ -20,49 +20,12 @@ from free_delivery_discount import FreeDeliveryDiscount
 from gift_discount import GiftDiscount
 
 
-def print_warehouse(warehouse: Warehouse, title: str):
-    print(f"--- {title} ---")
-    for p in warehouse:
-        print(f"  id={p.id} {p.name} ({p.category}) price={p.price_value} "
-              f"qty={p.quantity_value} weight={p.weight_value}")
-    if len(warehouse) == 0:
-        print("  (пусто)")
-
-
 def item(id: int, quantity: int, category: str) -> Product:
     return Product.from_type(id, quantity, ProductType.get_type(category))
 
 
 def header(title: str):
     print(f"\n{title}")
-
-
-def scenario_warehouse():
-    header("Склад: добавление товаров всеми фабриками")
-    wh = Warehouse(6)
-    wh.add_product(SmartphoneFactory().create_product("iPhone 15", 999, 10, 0.19))
-    wh.add_product(LaptopFactory().create_product("MacBook Air", 1299, 5, 1.24))
-    wh.add_product(TShirtFactory().create_product("Basic Tee", 25, 50, 0.2))
-    wh.add_product(JacketFactory().create_product("Winter Jacket", 150, 20, 0.9))
-    wh.add_product(MilkFactory().create_product("Milk 1L", 2, 100, 1.0))
-    wh.add_product(BreadFactory().create_product("Bread", 1, 80, 0.4))
-    print_warehouse(wh, "Склад")
-
-    # копирование / перемещение / поиск / перенос
-    copy_wh = copy.copy(wh)
-    p = copy_wh.find_by_id(1)
-    if p: p.change_quantity(+100)
-    print_warehouse(wh, "Оригинал (не изменился)")
-    print_warehouse(copy_wh, "Копия (изменена)")
-
-    moved = wh.move()
-    print(f"После move: source size={len(wh)}, moved size={len(moved)}")
-
-    # перенос товара между складами
-    secondary = Warehouse(3)
-    moved.transfer_product(next(iter(moved)).id, secondary)
-    print_warehouse(secondary, "Целевой склад после переноса")
-
 
 def scenario_orders():
     ivan = Customer(1, "Иван", "Москва")
